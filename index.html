@@ -49,6 +49,25 @@
             0% { transform: translateY(-100%); }
             100% { transform: translateY(100%); }
         }
+
+        .neural-scan {
+            position: relative;
+            overflow: hidden;
+        }
+        .neural-scan::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(248, 86, 6, 0.2), transparent);
+            animation: neural-move 2s infinite;
+        }
+        @keyframes neural-move {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
     </style>
 <script type="importmap">
 {

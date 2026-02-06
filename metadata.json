@@ -1,6 +1,6 @@
 {
   "name": "Daraz Ultra Clone - High Performance Marketplace",
-  "description": "A feature-rich e-commerce platform blueprint with a high-traffic architecture, featuring a robust seller dashboard, real-time analytics, and an optimized customer shopping experience inspired by Daraz.",
+  "description": "A feature-rich e-commerce platform blueprint with a high-traffic architecture.",
   "requestFramePermissions": [
     "camera",
     "geolocation"

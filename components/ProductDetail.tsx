@@ -51,12 +51,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onAddToCart, onB
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: `Analyze simulated customer sentiment for this product: "${product.name}". The overall rating is ${product.rating}/5 with ${product.reviewsCount} reviews. Generate a professional executive summary with a bulleted "Pros" and "Cons" list. Focus on quality, delivery speed, and value for money in the context of the Nepal market.`,
+        contents: `Analyze market trends and simulated customer satisfaction for this specific product: "${product.name}". 
+        Stats: ${product.rating}/5 stars, ${product.reviewsCount} reviews.
+        Task: Provide a professional "AI Executive Summary" in 3-4 bullet points focusing on Pros and Cons. 
+        Tone: Authoritative, helpful marketplace agent. Context: E-commerce in Nepal.`,
       });
-      setReviewSummary(response.text || "No summary could be generated at this time.");
+      setReviewSummary(response.text || "Insight engine returned empty response.");
     } catch (err) {
-      console.error("Summarizer error:", err);
-      setReviewSummary("Unable to analyze reviews. Please ensure your search capability is active.");
+      console.error("AI Insight Error:", err);
+      setReviewSummary("Failed to synthesize product insights. Please check your network connection.");
     } finally {
       setIsSummarizing(false);
     }
@@ -97,7 +100,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onAddToCart, onB
             </div>
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                {productImages.map((img, i) => (
-                 <div key={i} onClick={() => setActiveImageIndex(i)} className={`flex-shrink-0 w-16 h-16 border-2 rounded-sm overflow-hidden cursor-pointer transition-all ${activeImageIndex === i ? 'border-orange-500' : 'border-transparent opacity-60'}`}>
+                 <div key={i} onClick={() => setActiveImageIndex(i)} className={`flex-shrink-0 w-16 h-16 border-2 rounded-sm overflow-hidden cursor-pointer transition-all ${activeImageIndex === i ? 'border-orange-500 scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}>
                     <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
                  </div>
                ))}
@@ -121,49 +124,51 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onAddToCart, onB
               </div>
               <div className="h-4 w-[1px] bg-gray-200"></div>
               <div className="flex items-center gap-2 text-xs">
-                {availabilityStatus === 'checking' ? 'Querying API...' : availabilityStatus === 'low' ? <span className="text-red-500 font-black uppercase">Low Stock</span> : <span className="text-green-600 font-black uppercase">In Stock</span>}
+                {availabilityStatus === 'checking' ? <span className="animate-pulse text-gray-400">Verifying Inventory...</span> : availabilityStatus === 'low' ? <span className="text-red-500 font-black uppercase">Critical Stock</span> : <span className="text-green-600 font-black uppercase">Optimized Stock</span>}
               </div>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-sm mb-8 border-l-4 border-orange-500">
+            <div className="bg-gray-50 p-6 rounded-sm mb-8 border-l-4 border-orange-500 shadow-sm">
               <div className="text-4xl font-black text-[#F85606] mb-1">{formattedPrice}</div>
               <div className="flex items-center gap-3 text-sm">
                 <span className="text-gray-400 line-through font-bold">{formattedOriginal}</span>
-                <span className="text-gray-900 font-black bg-white px-2 py-0.5 rounded shadow-sm">-{product.discountPercentage}% OFF</span>
+                <span className="text-gray-900 font-black bg-white px-2 py-0.5 rounded shadow-sm border border-gray-100">-{product.discountPercentage}% SECURED DEAL</span>
               </div>
             </div>
 
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-8">
                 <span className="text-xs text-gray-400 font-black uppercase tracking-widest w-20">Quantity</span>
-                <div className="flex items-center border-2 border-gray-100 rounded bg-white overflow-hidden">
-                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-5 py-2 hover:bg-gray-50 border-r-2">-</button>
-                  <span className="px-8 py-2 text-sm font-black">{qty}</span>
-                  <button onClick={() => setQty(qty + 1)} className="px-5 py-2 hover:bg-gray-50 border-l-2">+</button>
+                <div className="flex items-center border-2 border-gray-100 rounded bg-white overflow-hidden shadow-sm">
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-5 py-2 hover:bg-gray-50 border-r-2 transition-colors">-</button>
+                  <span className="px-8 py-2 text-sm font-black min-w-[60px] text-center">{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} className="px-5 py-2 hover:bg-gray-50 border-l-2 transition-colors">+</button>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 mt-4">
-                <button onClick={() => onBuyNow(product, qty)} className="flex-1 bg-[#2ABBE8] text-white py-4 px-8 rounded-sm font-black hover:bg-blue-500 transition-all uppercase tracking-[0.2em] text-xs">Buy Now</button>
-                <button onClick={() => onAddToCart(product, qty)} className="flex-1 bg-[#F85606] text-white py-4 px-8 rounded-sm font-black hover:bg-orange-600 transition-all uppercase tracking-[0.2em] text-xs">Add to Cart</button>
+                <button onClick={() => onBuyNow(product, qty)} className="flex-1 bg-[#2ABBE8] text-white py-4 px-8 rounded-sm font-black hover:bg-blue-500 transition-all uppercase tracking-[0.2em] text-xs shadow-md">Buy Now</button>
+                <button onClick={() => onAddToCart(product, qty)} className="flex-1 bg-[#F85606] text-white py-4 px-8 rounded-sm font-black hover:bg-orange-600 transition-all uppercase tracking-[0.2em] text-xs shadow-md">Add to Cart</button>
               </div>
             </div>
           </div>
 
           <div className="lg:w-[320px] bg-gray-50 p-6 flex flex-col gap-6 border-l border-gray-100">
-            <div>
+            <div className="bg-white p-4 rounded border border-gray-200 shadow-sm">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Delivery</span>
-                <button onClick={handleDetectLocation} disabled={isDetecting} className="text-[10px] text-blue-600 font-black uppercase tracking-widest">{isDetecting ? 'Locating...' : 'Auto-Detect'}</button>
+                <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Global Logistics</span>
+                <button onClick={handleDetectLocation} disabled={isDetecting} className="text-[10px] text-blue-600 font-black uppercase tracking-widest hover:underline transition-all">
+                  {isDetecting ? 'Querying...' : 'Auto-Sync Location'}
+                </button>
               </div>
-              <div className="flex items-start gap-3 mb-6 bg-white p-3 rounded border border-gray-100 shadow-sm">
+              <div className="flex items-start gap-3 mb-6 bg-gray-50 p-3 rounded border border-gray-100 italic">
                 <svg className="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                <div className="flex-1 text-xs font-bold leading-tight">{locationStr}</div>
+                <div className="flex-1 text-[11px] font-bold leading-tight text-gray-600">{locationStr}</div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                  <div className="flex-1"><p className="text-xs font-black uppercase tracking-tighter">Standard Delivery</p></div>
-                  <span className="text-xs font-black">{product.freeShipping ? 'FREE' : 'Rs. 150'}</span>
+                  <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                  <div className="flex-1"><p className="text-[10px] font-black uppercase tracking-tighter">Verified Standard Shipping</p></div>
+                  <span className="text-[10px] font-black">{product.freeShipping ? 'COMPLIMENTARY' : 'Rs. 150'}</span>
                 </div>
               </div>
             </div>
@@ -173,53 +178,69 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onAddToCart, onB
 
       {/* AI Intelligence Section */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-8 rounded-sm shadow-sm border border-gray-100">
+        <div className="bg-white p-8 rounded-sm shadow-sm border border-gray-100 neural-scan">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">AI Review Summary</h2>
+            <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight flex items-center gap-2">
+              <span className="bg-orange-500 text-white p-1 rounded text-xs">AI</span>
+              Insight Engine
+            </h2>
             {!reviewSummary && !isSummarizing && (
               <button 
                 onClick={handleSummarizeReviews} 
-                className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-orange-200 transition-colors"
+                className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-orange-200 transition-all shadow-sm"
               >
-                ✨ Summarize Reviews
+                ✨ Synthesize Feedback
               </button>
             )}
           </div>
           
           {isSummarizing ? (
-            <div className="space-y-4 animate-pulse">
-               <div className="h-4 bg-gray-100 rounded w-3/4"></div>
-               <div className="h-4 bg-gray-100 rounded w-1/2"></div>
-               <div className="h-4 bg-gray-100 rounded w-5/6"></div>
-               <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest text-center mt-4">Gemini is synthesizing feedback...</p>
+            <div className="space-y-4">
+               <div className="h-4 bg-gray-100 rounded w-3/4 animate-pulse"></div>
+               <div className="h-4 bg-gray-100 rounded w-1/2 animate-pulse"></div>
+               <div className="h-4 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+               <div className="mt-6 flex flex-col items-center gap-2">
+                 <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                 <p className="text-[9px] font-black text-orange-400 uppercase tracking-[0.2em] text-center">Processing Multi-Source Sentiment...</p>
+               </div>
             </div>
           ) : reviewSummary ? (
-            <div className="text-sm text-gray-600 font-medium leading-relaxed prose-sm">
-              <div className="bg-orange-50/50 p-6 rounded border border-orange-100 whitespace-pre-line relative">
-                <div className="absolute top-2 right-4 opacity-10 text-4xl">✨</div>
+            <div className="text-sm text-gray-600 font-medium leading-relaxed">
+              <div className="bg-orange-50/30 p-6 rounded-lg border border-orange-100 whitespace-pre-line relative shadow-inner">
+                <div className="absolute top-2 right-4 opacity-5 text-6xl">🤖</div>
                 {reviewSummary}
               </div>
-              <button onClick={() => setReviewSummary(null)} className="mt-4 text-[10px] text-gray-400 font-black uppercase hover:text-orange-500 underline tracking-widest">Refresh Analysis</button>
+              <div className="flex justify-between items-center mt-4">
+                <button onClick={() => setReviewSummary(null)} className="text-[10px] text-gray-400 font-black uppercase hover:text-orange-500 underline tracking-widest transition-colors">Invalidate Cache</button>
+                <span className="text-[9px] text-gray-300 font-bold italic">Generated by Gemini 3 Flash</span>
+              </div>
             </div>
           ) : (
-            <div className="text-center py-10 opacity-30">
-              <div className="text-4xl mb-4">🔮</div>
-              <p className="text-xs text-gray-500 font-bold italic">Deep insight available. Click to generate AI summary.</p>
+            <div className="text-center py-10">
+              <div className="text-5xl mb-4 opacity-10">🧠</div>
+              <p className="text-xs text-gray-400 font-bold italic mb-4">Click to aggregate customer insights using AI Decision Support.</p>
+              <button onClick={handleSummarizeReviews} className="text-[10px] font-black text-orange-500 uppercase tracking-widest border border-orange-500/20 px-6 py-2 rounded-full hover:bg-orange-50 transition-all">Start Analysis</button>
             </div>
           )}
         </div>
 
         <div className="bg-white p-8 rounded-sm shadow-sm border border-gray-100">
-          <h2 className="text-xl font-black text-gray-800 mb-6 uppercase tracking-tight">Full Specifications</h2>
+          <h2 className="text-xl font-black text-gray-800 mb-6 uppercase tracking-tight">Enterprise Specifications</h2>
           <div className="text-sm text-gray-600 font-medium leading-relaxed space-y-4">
-            <p>The {product.name} is a high-performance {product.category} item designed for reliability and efficiency. Standardized for the Nepal region with full local warranty support.</p>
+            <p>The {product.name} is verified for high-traffic marketplace standards. Optimized for reliability within the Nepal regional infrastructure.</p>
             <div className="grid grid-cols-2 gap-4 mt-6">
-               <div className="p-3 bg-gray-50 border rounded text-[10px] font-black uppercase tracking-widest text-gray-400">
-                  SKU: DZ-{product.id.split('-')[1]}
+               <div className="p-4 bg-gray-50 border border-gray-100 rounded text-[10px] font-black uppercase tracking-widest text-gray-500 flex flex-col gap-1">
+                  <span className="opacity-40">System SKU</span>
+                  DZ-{product.id.split('-')[1]}
                </div>
-               <div className="p-3 bg-gray-50 border rounded text-[10px] font-black uppercase tracking-widest text-gray-400">
-                  Seller: Verified Tier 1
+               <div className="p-4 bg-gray-50 border border-gray-100 rounded text-[10px] font-black uppercase tracking-widest text-gray-500 flex flex-col gap-1">
+                  <span className="opacity-40">Verification</span>
+                  Verified Tier 1
                </div>
+            </div>
+            <div className="mt-4 p-4 border border-green-100 bg-green-50/50 rounded flex items-center gap-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+              <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">Quality Assurance Pass: 2024.12</span>
             </div>
           </div>
         </div>

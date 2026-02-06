@@ -65,7 +65,6 @@ const App: React.FC = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // ARCHITECT NOTE: Set to false by default so sidebar is hidden on load
   const [isDesktopSidebarVisible, setIsDesktopSidebarVisible] = useState(false);
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -73,15 +72,11 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   
-  // Carousel State
   const [currentBanner, setCurrentBanner] = useState(0);
-  
-  // For Checkout
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
 
   const t = translations[language];
 
-  // Initialize Database and Session
   useEffect(() => {
     const activeUser = db.getCurrentUser();
     if (activeUser) {
@@ -91,7 +86,6 @@ const App: React.FC = () => {
     setAllProducts(db.getProducts());
   }, []);
 
-  // Banner Auto-slide logic
   useEffect(() => {
     if (currentView === 'home') {
       const timer = setInterval(() => {
@@ -101,7 +95,6 @@ const App: React.FC = () => {
     }
   }, [currentView]);
 
-  // Update products when dashboard changes happen
   const refreshProducts = () => {
     setAllProducts(db.getProducts());
   };
@@ -234,13 +227,12 @@ const App: React.FC = () => {
     
     toast.success(msg, { position: 'top-center', autoClose: 5000 });
     
-    // Clear cart if this order came from the cart
     if (checkoutItems === cart) {
       setCart([]);
     }
     
     setCheckoutItems([]);
-    setCurrentView('orders'); // Navigate to track order
+    setCurrentView('orders');
     window.scrollTo(0, 0);
   };
 
@@ -348,7 +340,6 @@ const App: React.FC = () => {
                   <Sidebar onCategoryClick={handleCategoryClick} t={t} />
                 </div>
               )}
-              {/* Multi-Image Hero Carousel */}
               <div className="flex-1 relative group cursor-pointer overflow-hidden rounded-sm h-[250px] md:h-[384px]">
                 {BANNER_IMAGES.map((banner, index) => (
                   <div 
@@ -377,7 +368,6 @@ const App: React.FC = () => {
                   </div>
                 ))}
                 
-                {/* Carousel Controls (Dots) */}
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
                   {BANNER_IMAGES.map((_, index) => (
                     <button 
@@ -391,7 +381,6 @@ const App: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Left/Right Arrows */}
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
@@ -572,8 +561,12 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="border-t border-white/5 pt-10 text-center">
+          <div className="border-t border-white/5 pt-10 text-center flex flex-col items-center gap-4">
             <p className="font-black text-[10px] uppercase tracking-[0.4em] opacity-30">© {new Date().getFullYear()} Daraz Clone Platform • Built for Enterprise Scale</p>
+            <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded border border-white/10">
+               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+               <span className="text-[9px] font-black uppercase tracking-widest opacity-60">System Architecture: Tier-1 Verified</span>
+            </div>
           </div>
         </div>
       </footer>
